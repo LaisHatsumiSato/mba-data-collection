@@ -56,7 +56,7 @@ services:
     environment:
       JUPYTER_TOKEN: "123"
     volumes:
-      - ./notebooks:/home/mba/work
+      - ./notebooks:/home/jovyan/work
 
   api:
     build: .
@@ -102,9 +102,7 @@ services:
       bash -c "
       echo '🚀 Rodando scripts...' &&
       psql -h postgres -U postgres -d pipeline_transacoes -f /scripts/01_schema.sql &&
-      psql -h postgres -U postgres -d pipeline_transacoes -f /scripts/02_bronze.sql &&
-      psql -h postgres -U postgres -d pipeline_transacoes -f /scripts/03_silver.sql &&
-      psql -h postgres -U postgres -d pipeline_transacoes -f /scripts/04_gold.sql &&
+      psql -h postgres -U postgres -d pipeline_transacoes -f /scripts/01_staging.sql &&
       echo '✅ Scripts executados!'
       "
     environment:
