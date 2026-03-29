@@ -4,14 +4,14 @@ USER root
 
 # instala Java (OBRIGATÓRIO pro PySpark)
 RUN apt-get update && \
-    apt-get install -y openjdk-11-jdk && \
+    apt-get install -y openjdk-17-jdk curl && \
     apt-get clean
 
 # instala PySpark
-RUN pip install pyspark
+RUN pip install pyspark==3.5.1
 
 # configura JAVA_HOME
-ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 ENV PATH=$JAVA_HOME/bin:$PATH
 
 USER $NB_UID
