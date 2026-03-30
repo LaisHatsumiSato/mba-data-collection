@@ -22,7 +22,7 @@ def criar_topico():
         print(f"Tópico já existe ou erro: {e}")
 
 
-# ⏳ espera Kafka subir
+#  espera Kafka subir
 time.sleep(5)
 
 criar_topico()

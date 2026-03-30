@@ -30,7 +30,7 @@ while True:
         "metodo_pagamento": random.choice(metodos_pagamento)
     }
 
-    # 🔥 SIMULA ERRO DE DADOS (10% dos casos)
+    #  SIMULA ERRO DE DADOS (10% dos casos)
     if random.random() < 0.1:
         transacao["valor"] = None
 

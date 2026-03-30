@@ -26,18 +26,18 @@ for i in range(10):
         conn = psycopg2.connect(**DB_CONFIG)
         cursor = conn.cursor()
 
-        # 🔥 GARANTE SCHEMA
+        # GARANTE SCHEMA
         cursor.execute("SET search_path TO staging;")
         conn.commit()
 
-        print("✅ Conectado ao PostgreSQL!")
+        print(" Conectado ao PostgreSQL!")
         break
     except Exception as e:
-        print(f"⏳ Tentando conectar ao banco... {e}")
+        print(f" Tentando conectar ao banco... {e}")
         time.sleep(3)
 
 if conn is None:
-    raise Exception("❌ Não conseguiu conectar ao banco")
+    raise Exception(" Não conseguiu conectar ao banco")
 
 # -------------------------------
 consumer = None
@@ -52,14 +52,14 @@ for i in range(10):
             enable_auto_commit=True,
             group_id="consumer-bronze"
         )
-        print("✅ Conectado ao Kafka!")
+        print(" Conectado ao Kafka!")
         break
     except Exception as e:
-        print(f"⏳ Tentando conectar ao Kafka... {e}")
+        print(f" Tentando conectar ao Kafka... {e}")
         time.sleep(5)
 
 if consumer is None:
-    raise Exception("❌ Não conectou no Kafka")
+    raise Exception(" Não conectou no Kafka")
 
 # -------------------------------
 def salvar_lote(lista_dados):
@@ -72,14 +72,14 @@ def salvar_lote(lista_dados):
         """, registros)
 
         conn.commit()
-        print(f"🚀 Inserido lote RAW com {len(lista_dados)} registros!")
+        print(f" Inserido lote RAW com {len(lista_dados)} registros!")
 
     except Exception as e:
         conn.rollback()
-        print("❌ ERRO NO LOTE:", e)
+        print(" ERRO NO LOTE:", e)
 
 # -------------------------------
-print("🚀 Iniciando ingestão...")
+print(" Iniciando ingestão...")
 
 buffer = []
 BATCH_SIZE = 100
@@ -89,17 +89,17 @@ INTERVALO = 5  # segundos (simples pra demo)
 for message in consumer:
     dados = message.value
 
-    print(f"📥 Recebendo... total buffer: {len(buffer)}")
+    print(f" Recebendo... total buffer: {len(buffer)}")
     # agora salva direto o JSON
     buffer.append(dados)
 
-    # 🔥 condição 1: lote cheio
+    #  condição 1: lote cheio
     if len(buffer) >= BATCH_SIZE:
         salvar_lote(buffer)
         buffer = []
         ultimo_envio = time.time()
 
-    # 🔥 condição 2: tempo (pra não travar)
+    #  condição 2: tempo (pra não travar)
     elif time.time() - ultimo_envio > INTERVALO:
         if buffer:
             salvar_lote(buffer)

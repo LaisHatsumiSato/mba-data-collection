@@ -37,13 +37,13 @@ def startup_event():
                 bootstrap_servers=KAFKA_SERVER,
                 value_serializer=lambda v: json.dumps(v).encode("utf-8")
             )
-            print("✅ Conectado ao Kafka!")
+            print(" Conectado ao Kafka!")
             return
         except Exception as e:
-            print(f"⏳ Tentando conectar ao Kafka... {e}")
+            print(f" Tentando conectar ao Kafka... {e}")
             time.sleep(3)
 
-    print("❌ Kafka não disponível")
+    print(" Kafka não disponível")
 
 # -------------------------------
 @app.get("/monitor", response_class=HTMLResponse)
@@ -75,11 +75,11 @@ def monitor():
 def receber_transacao(transacao: dict):
     global contador, inicio
 
-    # 🔥 GARANTIA ABSOLUTA (resolve seu erro)
+    #  GARANTIA ABSOLUTA (resolve seu erro)
     if inicio is None:
         inicio = time.time()
 
-    # 🔥 proteção extra (caso raro)
+    #  proteção extra (caso raro)
     if inicio is None:
         return {"status": "erro ao iniciar contador"}
 
@@ -87,7 +87,7 @@ def receber_transacao(transacao: dict):
     if (time.time() - inicio) > TEMPO_LIMITE:
         return {"status": "tempo limite atingido"}
 
-    # 🔢 limite de volume
+    #  limite de volume
     if contador >= LIMITE:
         return {"status": "limite de transações atingido"}
 
@@ -98,7 +98,7 @@ def receber_transacao(transacao: dict):
         producer.send("transacoes", transacao)
         contador += 1
 
-        print(f"📤 Total enviado: {contador}")
+        print(f" Total enviado: {contador}")
 
         return {"status": "enviado para kafka"}
     else:
