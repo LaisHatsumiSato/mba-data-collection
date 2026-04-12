@@ -5,7 +5,7 @@ from kafka.admin import KafkaAdminClient, NewTopic
 
 def criar_topico():
     try:
-        admin = KafkaAdminClient(bootstrap_servers="kafka:9092")
+        admin = KafkaAdminClient(bootstrap_servers="kafka:29092")
 
         topic = NewTopic(
             name="transacoes",
@@ -22,7 +22,6 @@ def criar_topico():
         print(f"Tópico já existe ou erro: {e}")
 
 
-#  espera Kafka subir
 time.sleep(5)
 
 criar_topico()
