@@ -14,12 +14,12 @@ def criar_topico():
         )
 
         admin.create_topics([topic])
-        print("Tópico criado com sucesso!")
+        print("Topico criado com sucesso")
 
         admin.close()
 
     except Exception as e:
-        print(f"Tópico já existe ou erro: {e}")
+        print(f"Topico ja existe ou erro: {e}")
 
 
 time.sleep(5)
@@ -30,3 +30,22 @@ producer = KafkaProducer(
     bootstrap_servers="kafka:29092",
     value_serializer=lambda v: json.dumps(v).encode("utf-8")
 )
+
+print("Producer iniciado")
+
+while True:
+    try:
+        data = {
+            "id": int(time.time())
+        }
+
+        print(f"Enviando: {data}")
+
+        producer.send("transacoes", value=data)
+        producer.flush()
+
+        time.sleep(2)
+
+    except Exception as e:
+        print(f"Erro ao enviar: {e}")
+        time.sleep(5)
