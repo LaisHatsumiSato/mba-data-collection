@@ -7,7 +7,7 @@ import time
 
 # -------------------------------
 KAFKA_TOPIC = "transacoes"
-KAFKA_SERVER = "kafka:9092"
+KAFKA_SERVER = "kafka:29092"
 
 # -------------------------------
 DB_CONFIG = {
