@@ -82,9 +82,9 @@ def salvar_lote(lista_dados):
 print(" Iniciando ingestão...")
 
 buffer = []
-BATCH_SIZE = 100
+BATCH_SIZE = 10
 ultimo_envio = time.time()
-INTERVALO = 5  # segundos (simples pra demo)
+INTERVALO = 1  # segundos (simples pra demo)
 
 for message in consumer:
     dados = message.value
