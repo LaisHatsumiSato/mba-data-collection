@@ -8,7 +8,7 @@ app = FastAPI()
 
 # -------------------------------
 # CONFIG
-KAFKA_SERVER = "kafka:9092"
+KAFKA_SERVER = "kafka:29092"
 TEMPO_LIMITE = 60
 LIMITE = 100_000
 
@@ -55,7 +55,7 @@ def monitor():
             <meta http-equiv="refresh" content="2">
         </head>
         <body>
-            <h1>📊 Transações</h1>
+            <h1> Transações</h1>
             <div id="dados"></div>
 
             <script>
