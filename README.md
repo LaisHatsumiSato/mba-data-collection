@@ -1,79 +1,187 @@
-# Data Collection & Storage Pipeline 🚀
+# 🚀 Data Collection & Storage Pipeline (Lakehouse Transacional)
 
-Este projeto implementa um pipeline de dados ponta a ponta (End-to-End) focado em *Ingestão, **Processamento Streaming e Batch* e armazenamento em arquitetura *Lakehouse. O sistema simula transações ecommerce em tempo real, gerencia o tráfego via mensageria e organiza os dados utilizando a **Medallion Architecture* (Raw, Bronze, Silver).
+Este projeto implementa um pipeline de dados ponta a ponta (**End-to-End**) focado em **Ingestão, Processamento (Streaming e Batch)** e armazenamento em arquitetura **Lakehouse**.
 
-## 🏗️ Arquitetura do Sistema
+O sistema simula transações de e-commerce em tempo real, gerencia o fluxo via mensageria e organiza os dados utilizando a **Medallion Architecture (Raw, Bronze, Silver)**, com suporte a **operações ACID** através do Apache Iceberg.
 
-O fluxo de dados segue o seguinte caminho:
+---
 
-1.  *Simulador*: Gera transações aleatórias (incluindo simulação de falhas de dados).
-2.  *FastAPI (Producer)*: Recebe os dados, normaliza-os e atua como um Producer para o Kafka.
-3.  *Apache Kafka*: Atua como o buffer de streaming, garantindo que nenhuma mensagem seja perdida entre a coleta e o armazenamento.
-4.  *Consumer*: Consome os dados do Kafka e realiza a ingestão bruta (RAW) no PostgreSQL.
-5.  *Staging*: Armazena os dados crus em formato JSONB para persistência inicial.
-6.  *PySpark & Apache Iceberg*: Camada de processamento distribuído que transforma os dados brutos em tabelas analíticas otimizadas, seguindo as camadas:
-      - Raw: Staging de dados
-      - Bronze: Dados estruturados e tipados vindos do Staging.
-      - Silver: Dados limpos, sem nulos, deduplicados via MERGE INTO e enriquecidos.
+# 🎯 Objetivo
 
-## 🛠️ Tecnologias Utilizadas
+Construir um pipeline capaz de:
 
-| Componente | Tecnologia |
-| :--- | :--- |
-| *Linguagem* | Python | SQL |
-| *Orquestração* | Docker & Docker Compose |
-| *API / Gateway* | FastAPI |
-| *Streaming* | Apache Kafka & Zookeeper |
-| *Banco de Dados* | PostgreSQL 15 |
-| *Processamento* | PySpark (Spark 3.5.1) |
-| *Table Format* | Apache Iceberg |
-| *IDE / Notebooks* | Jupyter Lab |
+* Ingerir dados transacionais em tempo real
+* Processar e tratar dados em múltiplas camadas
+* Persistir dados em formato Open Table Format (Iceberg)
+* Garantir propriedades **ACID (Atomicidade, Consistência, Isolamento, Durabilidade)**
+* Demonstrar operações de **UPSERT, DELETE e Time Travel**
+* Comparar performance entre **Iceberg vs Parquet**
 
-## 📂 Estrutura do Projeto
+---
 
-text
-├── api/                  # FastAPI para recebimento de transações
-├── simulator/            # Script de geração de dados randômicos
-├── consumer/             # Consumidor Kafka para ingestão no Postgres
+# 🏗️ Arquitetura do Sistema
+
+Fluxo completo de dados:
+
+```text
+Simulador → FastAPI → Kafka → Consumer → PostgreSQL (RAW) → Spark → Iceberg (Bronze → Silver)
+```
+
+## 🔄 Componentes
+
+* **Simulador:** Gera transações aleatórias (incluindo falhas de dados)
+* **FastAPI (Producer):** Normaliza e publica eventos no Kafka
+* **Apache Kafka:** Buffer de streaming garantindo resiliência
+* **Consumer:** Consome eventos e persiste na camada RAW
+* **PostgreSQL (Staging):** Armazena dados brutos em JSONB
+* **PySpark + Iceberg:** Processamento distribuído e armazenamento transacional
+
+---
+
+# 🗂️ Arquitetura Medallion
+
+| Camada | Tecnologia | Descrição                             |
+| ------ | ---------- | ------------------------------------- |
+| Raw    | PostgreSQL | Dados crus em JSONB                   |
+| Bronze | Iceberg    | Dados estruturados e tipados          |
+| Silver | Iceberg    | Dados tratados, limpos e enriquecidos |
+
+---
+
+# 🧹 Processamento de Dados (Silver)
+
+Transformações aplicadas:
+
+* **Casting:** Conversão de tipos (ex: valor → double)
+* **Data Cleaning:** Remoção de registros inválidos
+* **Imputação:** Substituição de valores nulos (valor → 0)
+* **Deduplicação:** Remoção de duplicatas por ID
+* **Enriquecimento:** Criação de colunas derivadas (ex: preço unitário)
+
+---
+
+# 🔥 Operações ACID com Iceberg
+
+## ✔️ UPSERT (MERGE INTO)
+
+Atualiza registros existentes e insere novos:
+
+* Garante **atomicidade**
+* Evita duplicação de dados
+
+## ✔️ DELETE
+
+Remoção de registros com garantia transacional:
+
+* Exemplo: exclusão de registros inválidos (`valor = 0`)
+* Validação realizada via contagem antes/depois
+
+## ✔️ Time Travel
+
+Permite consultar versões anteriores da tabela:
+
+* Baseado em snapshots do Iceberg
+* Suporte a auditoria e recuperação de dados
+
+---
+
+# ⚡ Benchmark de Performance
+
+Comparação entre:
+
+* **Parquet (arquivo tradicional)**
+* **Apache Iceberg (tabela transacional)**
+
+## Métricas avaliadas:
+
+* Tempo de leitura (`count`)
+* Tempo de consulta com filtro
+* Eficiência em operações analíticas
+
+---
+
+# 📊 Propriedades ACID
+
+| Propriedade  | Implementação                             |
+| ------------ | ----------------------------------------- |
+| Atomicidade  | MERGE INTO e DELETE                       |
+| Consistência | Validação e tratamento de dados           |
+| Isolamento   | Controle transacional do Iceberg          |
+| Durabilidade | Persistência em storage com versionamento |
+
+---
+
+# 🛠️ Tecnologias Utilizadas
+
+| Componente    | Tecnologia               |
+| ------------- | ------------------------ |
+| Linguagem     | Python                   |
+| API           | FastAPI                  |
+| Streaming     | Apache Kafka + Zookeeper |
+| Banco         | PostgreSQL 15            |
+| Processamento | PySpark (Spark 3.5.1)    |
+| Table Format  | Apache Iceberg           |
+| Orquestração  | Docker & Docker Compose  |
+| Ambiente      | Jupyter Lab              |
+
+---
+
+# 📂 Estrutura do Projeto
+
+```text
+├── api/                # FastAPI (Producer)
+├── simulator/         # Geração de dados
+├── consumer/          # Consumo Kafka → Postgres
 ├── docker/
-│   └── init/             # Scripts SQL de inicialização das tabelas
-├── notebooks/            # Notebooks Jupyter para ETL (RAW/Bronze/Silver)
-├── Dockerfile.jupyter    # Configuração do ambiente Spark + Iceberg
-└── docker-compose.yml    # Orquestração de todos os containers
+│   └── init/          # Scripts SQL
+├── notebooks/         # ETL (Bronze / Silver)
+├── Dockerfile.jupyter # Ambiente Spark
+└── docker-compose.yml # Orquestração
+```
+
+---
 
 # 🚀 Como Executar
 
-1.*Subir a infraestrutura*
+## 1. Subir a infraestrutura
 
-Certifique-se de ter o Docker instalado e execute:
-
-
+```bash
 docker-compose up -d --build
+```
 
+## 2. Monitorar ingestão
 
-Isso iniciará o Kafka, PostgreSQL, a API, o Simulador e o ambiente Jupyter.
+```
+http://localhost:8000/monitor
+```
 
-2. *Monitorar a Ingestão*
+## 3. Executar processamento
 
-Você pode acessar o monitor em tempo real da API em:
+* Rodar notebooks no Jupyter
+* Executar transformações Bronze → Silver
 
+---
 
-   http://localhost:8000/monitor.
-   
-3. *⚙️ Detalhes de Processamento*
+# 📊 Resultados
 
-Camada Silver (Tratamento e Qualidade)
+| Operação | Parquet | Iceberg |
+| -------- | ------- | ------- |
+| Leitura  | Xs      | Ys      |
+| Filtro   | Xs      | Ys      |
 
-O processo de transformação na camada Silver inclui:
-  - Casting: Conversão de tipos (ID para Int, Valor para Double).
-  - Data Cleaning: Remoção de registros com transacao_id nulo.
-  - Imputação: Preenchimento de valores faltantes (ex: valor nulo vira 0).
-  - Deduplicação: Uso de dropDuplicates baseado no ID único da transação.
-  - Upsert (Merge): Implementação do MERGE INTO do Iceberg para garantir que registros atualizados substituam os antigos sem gerar duplicatas na camada analítica.
+---
 
-# 📊 Detalhes das Camadas de Dados
+# 📌 Conclusão
 
-| Camada | Tecnologia | Descrição | 
-| *Staging* | PostgreSQL | Dados crus salvos como JSONB conforme recebidos da API. |
-| *Bronze* | Iceberg | Dados tipados e estruturados, mas ainda contendo inconsistências. |
-| *Silver* | Iceberg | Dados limpos, sem nulos e com colunas enriquecidas para análise. |
+O uso do Apache Iceberg permitiu:
+
+* Implementação de operações ACID
+* Versionamento de dados (Time Travel)
+* Melhor governança e rastreabilidade
+* Estrutura escalável para análise de dados
+
+---
+
+# 👩‍💻 Autora
+
+Projeto desenvolvido como trabalho final de MBA em Engenharia de Dados.
