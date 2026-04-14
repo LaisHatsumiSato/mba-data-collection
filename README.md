@@ -27,7 +27,7 @@ Fluxo completo de dados:
 Simulador → FastAPI → Kafka → Consumer → PostgreSQL (RAW) → Spark → Iceberg (Bronze → Silver)
 ```
 
-<img width="923" height="377" alt="image" src="https://github.com/user-attachments/assets/aff844d8-8ba1-4d83-849e-1ef634b74de0" />
+<img width="700" height="200" alt="image" src="https://github.com/user-attachments/assets/aff844d8-8ba1-4d83-849e-1ef634b74de0" />
 
 
 ## 🔄 Componentes
@@ -188,6 +188,8 @@ O uso do Apache Iceberg permitiu:
 # 👩‍💻 Autora
 
 Projeto desenvolvido como trabalho final de MBA em Engenharia de Dados.
+
+
 Aline Ribeiro Ferreira
 Arthur Girotti
 Lais Hatsumi Sato
