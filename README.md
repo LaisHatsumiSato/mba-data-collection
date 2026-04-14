@@ -185,3 +185,6 @@ O uso do Apache Iceberg permitiu:
 # 👩‍💻 Autora
 
 Projeto desenvolvido como trabalho final de MBA em Engenharia de Dados.
+Aline Ribeiro Ferreira
+Arthur Girotti
+Lais Hatsumi Sato
